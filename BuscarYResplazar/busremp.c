@@ -16,14 +16,16 @@ void limpiar();
 int revisar(int pos);
 int addArray(int i,int *arry);
 void reestrutura();
+void initArray(int *a);
 int inicioA[100]={0};
 int finalA[100]={0};
-
+int validarInicioAF = 0;
 int contador=0;
 int indiceVec=0;
 
 int main()
 {
+	
 	int pos = 0;
 	archivo = fopen("texto.txt","r+b");
 
@@ -74,12 +76,15 @@ int main()
                 caracter =	 fgetc(archivo);
 				if (caracter == cadena[0])
 				{
-					printf("%i-",pos);
-
-		   			inicio = pos;
-		   			contador = 0;
-		   			if(revisar(pos) == 1){
-		   				
+					//printf("%c - %i \n",caracter,pos);
+					inicio = pos;
+		   			//contador = 0;
+		   			int remp = revisar(pos); 
+		   			if(remp == 1){
+		   				printf("REMP");
+		   				validarInicioAF += 1;
+		   			}else if(remp == 0){
+		   				fseek(archivo,pos+1,SEEK_SET);
 		   			}
 					
 				}
@@ -110,9 +115,12 @@ void limpiar(){
 }
 
 void cambios(){
-	printf("%i\n",inicioA[0] );
+	for (int i = 0; i < sizeof(inicioA); ++i)
+	{
+		//printf("%i\n",inicioA[i] );
+	}
 	archivo = fopen("texto.txt","r+");
-	printf("%i indiceVec : \n",indiceVec );
+	
 	for (int i = 0; i <= indiceVec; i++)
 	{
 		fseek(archivo,inicioA[i],SEEK_SET);
@@ -135,15 +143,18 @@ void reestrutura(){
     fseek(archivo,0,SEEK_SET);
     int positionActual = 0;
     int termino = 0; 
+
+  
+
     while (termino == 0) //NO, no se puede limitar a el archivo origan ya que puede ser mas corto
    	{	
    		int bandera = 0;
    		
-   		for (int i = 0; i < sizeof(inicioA); i++)
-   		{
-   			if (inicioA[i] == positionActual && i < 100)
+   		for (int i = 0; i < validarInicioAF; i++)
+   		{	
+			//printf("INICIA pos %i con %i \n",i,inicioA[i]);
+   			if ( inicioA[i] == positionActual && i < 100)
    			{
-   				printf("pos %i es %i \n",i,inicioA[i]);
    				bandera = 1;
    				break;
    			}
@@ -175,23 +186,25 @@ void reestrutura(){
 
 int revisar(int pos){
 	
+	
 	fseek( archivo, pos, SEEK_SET );
 	caracter = fgetc(archivo);
+	
 
+	printf("%c  y  %c d %i -- %i \n",caracter,cadena[contador],pos,contador );
 	if (caracter == cadena[contador])
 	{	
 		contador += 1;
 		if (contador == cont2+1)
 		{
 			inicioA[indiceVec] = inicio;
-			finalA[indiceVec] = inicio + contador;
-			indiceVec += 1;
+			indiceVec = indiceVec + 1;
 			//addArray(inicio,inicioA);
 			//addArray(contador,finalA);
 			return 1;
 
 		}else
-		{
+		{	
 			revisar(pos+1);
 		}
 	}else{
@@ -200,13 +213,4 @@ int revisar(int pos){
 	}
 }
 
-int addArray(int i,int *arry){
-	for(int x=0 ; x < sizeof(arry) ;x++){	
-		if (arry[x] == 0)
-			{
-				arry[x] = i;
-				break;
-			}	
-	}
 
-}
